@@ -11,7 +11,6 @@ class Main extends React.Component {
     super(props);
     this.state = {
       posts: [],
-      savedPosts: [],
       colors: [],
 
       postsLoad: true,
@@ -46,13 +45,16 @@ class Main extends React.Component {
     ];
 
     this.getPosts = this.getPosts.bind(this);
-    this.updateDB = this.updateDB.bind(this);
-    this.savePost = this.savePost.bind(this);
-    this.getPostsFromStorage = this.getPostsFromStorage.bind(this);
-    this.deletePost = this.deletePost.bind(this);
     this.getRandom = this.getRandom.bind(this);
     this.getBestPhoto = this.getBestPhoto.bind(this);
     this.loadPosts = this.loadPosts.bind(this);
+    this.goTo = this.goTo.bind(this);
+  }
+
+  goTo(to) {
+    let target = document.getElementById(to);
+
+    target.scrollIntoView({ block: "start", behavior: "smooth" });
   }
 
   componentDidMount() {
@@ -62,13 +64,6 @@ class Main extends React.Component {
   }
 
   loadPosts() {
-    let obj = {
-      store: "disney-app",
-      key: "bookmarks",
-    };
-
-    this.getPostsFromStorage(obj);
-
     let posts = [];
 
     VK.Api.call(
@@ -131,73 +126,6 @@ class Main extends React.Component {
     return Math.round(rand);
   }
 
-  updateDB(obj) {
-    let openRequest = indexedDB.open(obj.store, 1);
-
-    openRequest.onupgradeneeded = () => {
-      let DB = openRequest.result;
-      if (!DB.objectStoreNames.contains(obj.store)) {
-        DB.createObjectStore(obj.store);
-      }
-    };
-
-    openRequest.onerror = function () {
-      console.error("Can't create DB", openRequest.error);
-    };
-
-    openRequest.onsuccess = () => {
-      let DB = openRequest.result;
-
-      let tx = DB.transaction(obj.store, "readwrite");
-      let store = tx.objectStore(obj.store);
-
-      store.put(obj.data, obj.key);
-    };
-  }
-
-  savePost(post) {
-    let posts = this.state.savedPosts;
-
-    posts.push(post);
-
-    this.setState({ savedPosts: posts }, () => {
-      let data = this.state.savedPosts;
-
-      let StoreData = {
-        store: "may-app",
-        key: "bookmarks",
-        data,
-      };
-
-      this.updateDB(StoreData);
-    });
-  }
-
-  deletePost(id) {
-    let posts = this.state.savedPosts;
-    let index;
-
-    if (posts) {
-      index = posts.findIndex((post) => id === post.id);
-
-      if (~index) {
-        posts.splice(index, 1);
-
-        this.setState({ savedPosts: posts }, () => {
-          let data = this.state.savedPosts;
-
-          let StoreData = {
-            store: "may-app",
-            key: "bookmarks",
-            data,
-          };
-
-          this.updateDB(StoreData);
-        });
-      }
-    }
-  }
-
   getPostsFromStorage(obj) {
     let openRequest = indexedDB.open(obj.store, 1);
 
@@ -230,7 +158,6 @@ class Main extends React.Component {
 
   getPosts() {
     let posts = this.state.posts;
-    let savedPosts = this.state.savedPosts;
     let response = [];
 
     response = posts.map((post, i) => {
@@ -238,7 +165,6 @@ class Main extends React.Component {
         <Post
           key={post.title + i}
           content={post}
-          savedPosts={savedPosts}
           onPostSave={this.savePost}
           onPostDelete={this.deletePost}
         ></Post>
@@ -250,14 +176,6 @@ class Main extends React.Component {
 
   render() {
     let posts = this.state.posts && this.getPosts();
-
-    let authBtn = !this.state.isAuth ? (
-      <button className="postReadBtn" ref={this.authBtn} onClick={this.VkAuth}>
-        войти
-      </button>
-    ) : (
-      ""
-    );
 
     let postLoading = this.state.postsLoad ? (
       <div className="spinner-border" role="status"></div>
@@ -311,7 +229,7 @@ class Main extends React.Component {
           <div className="col">{posts2}</div>
         </div>
         {!this.state.postsLoad ? (
-          <button className="loadMoreBtn" onClick={this.loadPosts}>
+          <button className="loadMoreBtn" onClick={(e) => this.goTo("Home", e)}>
             наверх
           </button>
         ) : (

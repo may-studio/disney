@@ -109,7 +109,9 @@ class App extends React.Component {
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div className="modal-body">...</div>
+              <div className="modal-body">
+                Самый лучший паблик о мультфильмах
+              </div>
             </div>
           </div>
         </div>

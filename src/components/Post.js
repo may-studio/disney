@@ -14,49 +14,10 @@ class Post extends React.Component {
       comms: this.props.content.comms,
       reps: this.props.content.reps,
       likes: this.props.content.likes,
-      video: this.props.content.video,
     };
-
-    this.savePost = this.savePost.bind(this);
-    this.isImportant = this.isImportant.bind(this);
-    this.deletePost = this.deletePost.bind(this);
-  }
-
-  savePost() {
-    let post = this.state;
-
-    this.props.onPostSave(post);
-  }
-
-  deletePost() {
-    let post_id = this.props.content.id;
-
-    this.props.onPostDelete(post_id);
-  }
-
-  isImportant() {
-    let posts = this.props.savedPosts;
-    let postId = this.state.id;
-
-    if (posts)
-      for (let i = 0; i < posts.length; i++) {
-        if (postId === posts[i].id) return 1;
-      }
-
-    return 0;
   }
 
   render() {
-    const mark = this.isImportant() ? (
-      <button className="postReadBtn" onClick={this.deletePost}>
-        <i className="fas fa-bookmark"></i>
-      </button>
-    ) : (
-      <button className="postReadBtn" onClick={this.savePost}>
-        <i className="far fa-bookmark"></i>
-      </button>
-    );
-
     let data = this.props.content;
 
     let title = "";
@@ -66,21 +27,17 @@ class Post extends React.Component {
       title = text.length > 200 ? text.substring(0, 200) + "..." : text;
     }
 
-    const markup = !data.video ? (
+    const markup = (
       <div
         className="postView card"
         style={{ backgroundColor: data.postColor }}
       >
         <div className="postHeader">
-          {/* <div className="postSrcLogo">
-        {this.getPostSrc(this.props.content.source)}
-      </div> */}
           <div className="postViews">
             <i className="fas fa-eye"></i>
             {"  "}
             {data.views}
           </div>
-          {mark}
           <button className="postReadBtn">
             <a
               style={{ textDecoration: "none", color: "white" }}
@@ -115,40 +72,6 @@ class Post extends React.Component {
             <i className="fas fa-reply"></i> {data.reps}
           </div>
         </div>
-      </div>
-    ) : (
-      <div
-        className="postView card"
-        style={{ backgroundColor: data.postColor }}
-      >
-        <div className="postHeader">
-          {mark}
-          <button className="postReadBtn">
-            <a
-              style={{ textDecoration: "none", color: "white" }}
-              href={"https://www.youtube.com/watch?v=" + data.id}
-            >
-              смотреть
-            </a>
-          </button>
-        </div>
-        {title.length ? (
-          <div className="postTitle" style={{ color: data.textColor }}>
-            {title}
-          </div>
-        ) : (
-          ""
-        )}
-        {data.cover ? (
-          <a
-            className="linkStyle"
-            href={"https://www.youtube.com/watch?v=" + data.id}
-          >
-            <img className="postCover" src={data.cover} alt="Обложка записи" />
-          </a>
-        ) : (
-          ""
-        )}
       </div>
     );
 
