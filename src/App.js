@@ -45,7 +45,7 @@ class App extends React.Component {
         </Switch>
       </HashRouter>
     ) : (
-      <EnterPage />
+      <EnterPage onAuth={this.setAuth} />
     );
 
     return (

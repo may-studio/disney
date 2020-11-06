@@ -15,7 +15,6 @@ class EnterPage extends React.Component {
       if (res.session) {
         console.log("success");
         this.props.onAuth(true);
-        this.loadPosts();
       } else {
         console.log("canceled");
       }
@@ -31,7 +30,7 @@ class EnterPage extends React.Component {
           {text}
           <br/>
           <button className="btnMain" onClick={this.VkAuth}>
-            <span style={{ color: 'rgba(0, 0, 0, 0.9)' }}>войти</span>
+    <span style={{ color: 'rgba(0, 0, 0, 0.9)' }}><i class="fab fa-vk"></i>{" "}войти</span>
           </button>
         </div>
       </div>
